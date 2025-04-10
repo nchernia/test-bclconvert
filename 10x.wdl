@@ -27,7 +27,7 @@ task BclConvert {
     command {
         set -euxo pipefail
 
-        echo "Downloading BCL tarball from: ~{bcl_tar_gcs}"
+        echo "Downloading BCL tarball from: " ~{bcl_tar_gcs}        
         gsutil cp "~{bcl_tar_gcs}" bcl_data.tar.gz
 
         echo "Extracting BCL tarball..."

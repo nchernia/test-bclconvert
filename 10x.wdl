@@ -1,4 +1,5 @@
 workflow BclConvertWorkflow {
+    
     input {
         String bcl_tar_gcs         # GCS path to tar.gz of BCLs
         String sample_sheet        # Local path or cloud path to sample sheet
@@ -24,23 +25,22 @@ task BclConvert {
         Int bcl_uncompressed_size_gb
     }
 
-command <<<
-    set -euxo pipefail
+    command <<<
+        set -euxo pipefail
 
-    echo "Downloading BCL tarball from:" ~{bcl_tar_gcs}
-    gsutil cp ~{bcl_tar_gcs} bcl_data.tar.gz
+        echo "Downloading BCL tarball from:" ~{bcl_tar_gcs}
+        gsutil cp ~{bcl_tar_gcs} bcl_data.tar.gz
 
-    echo "Extracting BCL tarball..."
-    mkdir -p bcl_data
-    tar -xzf bcl_data.tar.gz -C bcl_data
+        echo "Extracting BCL tarball..."
+        mkdir -p bcl_data
+        tar -xzf bcl_data.tar.gz -C bcl_data
 
-    echo "Running bcl-convert..."
-    bcl-convert \
-        --bcl-input-directory bcl_data \
-        --output-directory fastq \
-        --sample-sheet ~{sample_sheet}
->>>
-
+        echo "Running bcl-convert..."
+        bcl-convert \
+            --bcl-input-directory bcl_data \
+            --output-directory fastq \
+            --sample-sheet ~{sample_sheet}
+    >>>
 
     output {
         Array[File] fastq_files = glob("fastq/*fastq.gz")
@@ -53,4 +53,3 @@ command <<<
         disks: "local-disk ~{bcl_uncompressed_size_gb} HDD"
     }
 }
-

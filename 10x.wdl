@@ -4,7 +4,7 @@ workflow BclConvertWorkflow {
     input {
         String bcl_tar_gcs         # GCS path to tar.gz of BCLs
         String sample_sheet        # Local path or cloud path to sample sheet
-        Int? bcl_uncompressed_size_gb = 200  # Estimate of uncompressed BCL size
+        Int? bcl_uncompressed_size_gb   # Estimate of uncompressed BCL size
     }
 
     call BclConvert {
@@ -21,20 +21,26 @@ workflow BclConvertWorkflow {
 
 task BclConvert {
     input {
-        String bcl_tar_gcs
+        File bcl_tar_gcs
         String sample_sheet
-        Int bcl_uncompressed_size_gb
+		Boolean zipped = true
+
+		# GCS folder where to store the output data
+		#String outputDir
     }
 
+    String tar_flags = if zipped then 'ixzf' else 'ixf'
+	String untarBcl = 'gsutil -m -o GSUtil:parallel_thread_count=1' +
+		                ' -o GSUtil:sliced_object_download_max_components=8' +
+		                ' cp "~{bcl}" . && ' +
+		                'tar "~{tar_flags}" "~{basename(bcl_tar_gcs)}" --exclude Images --exclude Thumbnail_Images' 
+    Float bclSize = size(bcl, 'G')
+    Int diskSize = ceil(2.1 * bclSize)
+	String diskType = if diskSize > 375 then "SSD" else "LOCAL"
+
     command <<<
-        set -euxo pipefail
-
         echo "Downloading BCL tarball from:" ~{bcl_tar_gcs}
-        gsutil cp ~{bcl_tar_gcs} bcl_data.tar.gz
-
-        echo "Extracting BCL tarball..."
-        mkdir -p bcl_data
-        tar -xzf bcl_data.tar.gz -C bcl_data
+        ~{untarBcl}
 
         echo "Running bcl-convert..."
         bcl-convert \
@@ -51,6 +57,6 @@ task BclConvert {
         docker: "nchernia/bcl-convert:latest"
         cpu: 4
         memory: "16G"
-        disks: "local-disk ~{bcl_uncompressed_size_gb} HDD"
+        disks: "local-disk ~{diskSize} ~{diskType}"
     }
 }

@@ -35,10 +35,7 @@ task BclConvert {
         tar -xzf bcl_data.tar.gz -C bcl_data
 
         echo "Running bcl-convert..."
-        bcl-convert \
-            --bcl-input-directory bcl_data \
-            --output-directory fastq \
-            --sample-sheet ~{sample_sheet}
+        bcl-convert --bcl-input-directory bcl_data --output-directory fastq --sample-sheet ~{sample_sheet}
     }
 
     output {

@@ -3,13 +3,15 @@ workflow BclConvertWorkflow {
     
     input {
         File bcl_tar_gcs         # GCS path to tar.gz of BCLs
-        String sample_sheet        # Local path or cloud path to sample sheet
+        String sample_sheet      # Local path or cloud path to sample sheet
+	Int bcl_size             # Size of bcl in GB 
     }
 
     call BclConvert {
         input:
             bcl_tar_gcs=bcl_tar_gcs,
-            sample_sheet=sample_sheet
+            sample_sheet=sample_sheet.
+            bcl_size=bcl_size
     }
 
     output {
@@ -21,7 +23,8 @@ task BclConvert {
     input {
         File bcl_tar_gcs
         String sample_sheet
-	Boolean zipped = true
+	#Boolean zipped = true
+	Int bcl_size
 
 	# GCS folder where to store the output data
 	#String outputDir
@@ -32,8 +35,8 @@ task BclConvert {
 		                ' -o GSUtil:sliced_object_download_max_components=8' +
 		                ' cp "~{bcl_tar_gcs}" . && ' +
 		                'tar "~{tar_flags}" "~{basename(bcl_tar_gcs)}" --exclude Images --exclude Thumbnail_Images' 
-    Float bclSize = size(bcl_tar_gcs, 'G')
-    Int diskSize = ceil(2.1 * bclSize)
+    #Float bclSize = size(bcl_tar_gcs, 'G')
+    Int diskSize = ceil(2.1 * bcl_size)
     String diskType = if diskSize > 375 then "SSD" else "LOCAL"
 
     command <<<

@@ -10,7 +10,7 @@ workflow BclConvertWorkflow {
     call BclConvert {
         input:
             bcl_tar_gcs=bcl_tar_gcs,
-            sample_sheet=sample_sheet.
+            sample_sheet=sample_sheet,
             bcl_size=bcl_size
     }
 

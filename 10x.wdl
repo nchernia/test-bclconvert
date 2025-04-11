@@ -30,7 +30,8 @@ task BclConvert {
 	#String outputDir
     }
 
-    String tar_flags = if zipped then 'ixzf' else 'ixf'
+    #String tar_flags = if zipped then 'ixzf' else 'ixf'
+    String tar_flags = 'ixf'
     String untarBcl = 'gsutil -m -o GSUtil:parallel_thread_count=1' +
 		                ' -o GSUtil:sliced_object_download_max_components=8' +
 		                ' cp "~{bcl_tar_gcs}" . && ' +

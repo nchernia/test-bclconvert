@@ -40,10 +40,10 @@ task BclConvert {
     command <<<
         echo "Downloading BCL tarball from:" ~{bcl_tar_gcs}
         ~{untarBcl}
-
+        ls
         echo "Running bcl-convert..."
         bcl-convert \
-            --bcl-input-directory bcl_data \
+            --bcl-input-directory . \
             --output-directory fastq \
             --sample-sheet ~{sample_sheet}
     >>>

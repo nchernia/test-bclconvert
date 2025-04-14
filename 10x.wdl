@@ -20,7 +20,7 @@ workflow BclConvertWorkflow {
 task BclConvert {
     input {
         File bcl_tar_gcs
-        String sample_sheet
+        File sample_sheet
 	#Boolean zipped = true
 
 	# GCS folder where to store the output data
@@ -38,6 +38,7 @@ task BclConvert {
     String diskType = if diskSize > 375 then "SSD" else "LOCAL"
 
     command <<<
+        ls
         echo "Downloading BCL tarball from:" ~{bcl_tar_gcs}
         ~{untarBcl}
         ls

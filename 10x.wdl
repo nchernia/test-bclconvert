@@ -3,7 +3,7 @@ workflow BclConvertWorkflow {
     
     input {
         File bcl_tar_gcs         # GCS path to tar.gz of BCLs
-        String sample_sheet      # Local path or cloud path to sample sheet
+        File sample_sheet      # Local path or cloud path to sample sheet
     }
 
     call BclConvert {

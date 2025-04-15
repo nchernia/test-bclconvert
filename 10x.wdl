@@ -34,7 +34,7 @@ task BclConvert {
 		                ' cp "~{bcl_tar_gcs}" . && ' +
 		                'tar "~{tar_flags}" "~{basename(bcl_tar_gcs)}" --exclude Images --exclude Thumbnail_Images' 
     Float bclSize = size(bcl_tar_gcs, 'G')
-    Int diskSize = ceil(4.1 * bclSize)
+    Int diskSize = ceil(5.1 * bclSize)
     String diskType = if diskSize > 375 then "SSD" else "LOCAL"
 
     command <<<
